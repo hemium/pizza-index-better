@@ -61,9 +61,10 @@ ENV/
 Thumbs.db
 
 # Project specific
-data/*.json
-data/*.db
-logs/*.log
+data/**
+!data/.gitkeep
+logs/**
+!logs/.gitkeep
 *.log
 
 # Sensitive data
@@ -75,3 +76,31 @@ credentials.json
 # Docker
 docker-compose.override.yml
 .claude/settings.local.json
+
+# Ruff / Mypy
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Python version files
+.python-version
+
+# Accidental version files (junk)
+=0.*
+=3.*
+
+# Local history / backups
+.history/
+*.bak
+*.tmp
+*.temp
+
+# More IDEs
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
