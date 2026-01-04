@@ -1,0 +1,47 @@
+# Docker Compose for Pizza Index Tracker Bot
+version: "3.8"
+
+services:
+  bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: pizza-index-bot
+    restart: unless-stopped
+    environment:
+      # Override with env file or docker-compose.override.yml
+      - SIMULATION_MODE=true
+      - LOG_LEVEL=INFO
+      - POLL_INTERVAL_MINUTES=5
+      - STRATEGY=hybrid
+    volumes:
+      # Persist data and logs
+      - ../data:/app/data
+      - ../logs:/app/logs
+      # Optional: mount config for easy editing
+      - ../config:/app/config:ro
+    env_file:
+      - ../.env
+    networks:
+      - pizza-bot-network
+
+  # Optional: PostgreSQL for production (future enhancement)
+  # postgres:
+  #   image: postgres:16-alpine
+  #   container_name: pizza-bot-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_USER: pizzabot
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+  #     POSTGRES_DB: pizzabot
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - pizza-bot-network
+
+networks:
+  pizza-bot-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

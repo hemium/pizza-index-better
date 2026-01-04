@@ -1,0 +1,54 @@
+# Market Keyword Mappings
+# Maps Pizza Index events to relevant Polymarket markets
+
+market_mappings:
+  # US Military Action - Middle East
+  - keywords:
+      - "US military"
+      - "Iran"
+      - "strike"
+      - "attack"
+      - "intervention"
+    market_id_template: "us-military-action"
+    description: "US military action in Middle East"
+    outcome: "YES"
+
+  # Israel-Gaza Conflict
+  - keywords:
+      - "Israel"
+      - "Gaza"
+      - "conflict"
+      - "escalation"
+      - "war"
+    market_id_template: "israel-gaza-escalation"
+    description: "Israel-Gaza conflict escalation"
+    outcome: "YES"
+
+  # US/NATO Defense Alert
+  - keywords:
+      - "NATO"
+      - "DEFCON"
+      - "military alert"
+      - "deployment"
+    market_id_template: "nato-alert"
+    description: "NATO/US defense alert level"
+    outcome: "YES"
+
+  # Geopolitical Tension
+  - keywords:
+      - "China"
+      - "Taiwan"
+      - "Russia"
+      - "Ukraine"
+      - "invasion"
+    market_id_template: "geopolitical-tension"
+    description: "Major geopolitical tension"
+    outcome: "YES"
+
+# Exclusion keywords - markets to avoid
+exclusions:
+  - "sports"
+  - "election"
+  - "crypto"
+  - "bitcoin"
+  - "weather"

@@ -1,0 +1,45 @@
+# Pizza Index Bot Configuration
+# This file contains user-configurable settings
+# Environment variables take precedence over these values
+
+# Pizza Monitor Settings
+pizza:
+  api_url: "https://www.pizzint.watch/api/dashboard-data"
+  poll_interval_minutes: 5
+
+# Signal Detection Thresholds
+signals:
+  defcon_threshold: 3          # Alert when DEFCON <= this level
+  spike_threshold: 2           # Minimum number of locations with spikes
+  confidence_threshold: 0.7    # Minimum confidence to act on signal
+  off_hours_start: 0           # Start of "off hours" (hour in ET, 0-23)
+  off_hours_end: 6             # End of "off hours"
+  z_score_threshold: 2.0       # Standard deviations for anomaly detection
+
+# Trading Strategy
+strategy:
+  mode: "hybrid"               # Options: aggressive, conservative, hybrid
+  pizza_signal_weight: 0.6     # Weight for pizza signals (hybrid mode)
+  trader_signal_weight: 0.4    # Weight for trader activity (hybrid mode)
+
+# Risk Management
+risk:
+  max_bet_size_usd: 100.0
+  max_daily_exposure_usd: 500.0
+  max_positions: 5
+  portfolio_value: 1000.0
+  max_drawdown_pct: 0.20       # 20% - stop trading at this loss
+  daily_loss_limit_pct: 0.05   # 5% - daily loss limit
+  stop_loss_pct: 0.50          # 50% - individual position stop loss
+  take_profit_multiplier: 2.0  # 2x - take profit target
+  bet_size_pct: 0.02           # 2% of portfolio per bet
+  max_exposure_per_market_pct: 0.10  # 10% max per market
+
+# Market Filters
+markets:
+  min_liquidity_usd: 10000.0
+  max_days_to_expiry: 7
+
+# Trading Mode
+trading:
+  simulation_mode: true        # Set to false for live trading
