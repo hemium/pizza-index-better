@@ -13,6 +13,7 @@ from pathlib import Path
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.config import settings
+from app.monitoring import PizzaMonitor, SignalDetector
 
 
 def setup_logging() -> logging.Logger:
@@ -51,6 +52,8 @@ class PizzaIndexBot:
         self.logger = logging.getLogger(f"{__name__}.PizzaIndexBot")
         self.scheduler = AsyncIOScheduler()
         self.shutdown_event = asyncio.Event()
+        self._pizza_monitor: PizzaMonitor | None = None
+        self._signal_detector: SignalDetector | None = None
 
     async def monitor_and_trade(self) -> None:
         """
@@ -86,8 +89,47 @@ class PizzaIndexBot:
     async def _fetch_pizza_data(self) -> None:
         """Fetch pizza index data from PizzINT API."""
         self.logger.info("Fetching pizza index data...")
-        # Placeholder - will implement in Phase 2
-        self.logger.info("Pizza data fetching not yet implemented (Phase 2)")
+
+        try:
+            if self._pizza_monitor is None:
+                self._pizza_monitor = PizzaMonitor(settings.PIZZA_API_URL)
+
+            if self._signal_detector is None:
+                self._signal_detector = SignalDetector(
+                    defcon_threshold=settings.DEFCON_THRESHOLD,
+                    spike_threshold=settings.SPIKE_THRESHOLD,
+                    confidence_threshold=settings.CONFIDENCE_THRESHOLD,
+                )
+
+            pizza_data = await self._pizza_monitor.fetch()
+
+            self.logger.info(
+                f"Pizza Index: {pizza_data.overall_index}, "
+                f"DEFCON: {pizza_data.defcon_level}, "
+                f"Active Spikes: {pizza_data.active_spikes}"
+            )
+
+            if change := self._pizza_monitor.get_defcon_change():
+                direction = "dropped" if change > 0 else "increased"
+                prev_defcon = self._pizza_monitor._last_defcon
+                curr_defcon = self._pizza_monitor._last_data.defcon_level if self._pizza_monitor._last_data else 0
+                self.logger.info(f"DEFCON {direction} by {abs(change)} (from {prev_defcon} to {curr_defcon})")
+
+            signals = self._signal_detector.analyze(pizza_data)
+
+            if signals:
+                self.logger.info(f"Detected {len(signals)} signal(s):")
+                for signal in signals:
+                    self.logger.info(
+                        f"  - {signal.type.value}: "
+                        f"confidence={signal.confidence:.2f}, "
+                        f"data={signal.data}"
+                    )
+            else:
+                self.logger.debug("No signals detected")
+
+        except Exception as e:
+            self.logger.error(f"Error fetching pizza data: {e}", exc_info=True)
 
     async def health_check(self) -> None:
         """Periodic health check - runs every minute."""
@@ -127,6 +169,10 @@ class PizzaIndexBot:
     async def shutdown(self) -> None:
         """Gracefully shutdown the bot."""
         self.logger.info("Shutting down...")
+
+        if self._pizza_monitor:
+            await self._pizza_monitor.close()
+
         self.scheduler.shutdown(wait=False)
         self.logger.info("Shutdown complete")
 

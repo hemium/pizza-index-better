@@ -16,10 +16,11 @@ web3>=7.0.0
 eth-account>=0.13.0
 
 # Notifications
-smtplib-ssl>=1.0.0  # Built-in, but listed for clarity
+# smtplib is built-in Python module
 
 # HTTP client with rate limiting
 requests-cache>=1.2.0
+aiohttp>=3.9.0
 
 # Utilities
 python-dateutil>=2.8.2
